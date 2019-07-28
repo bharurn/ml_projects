@@ -4,8 +4,7 @@ import pybel
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.externals import joblib
-
-X = []
+import pandas as pd
 
 # set RF-parameter
 n_estimators = 100
@@ -16,29 +15,40 @@ max_depth = 6
 min_samples_leaf = 6
 max_len = 4
 
-def xyz_to_mol(fname):
+def xyz_to_mol(fname):#to convert xyz file to mol for RDKit
     
-    mol_xyz = next(pybel.readfile("xyz", "test.xyz"))
+    mol_xyz = next(pybel.readfile("xyz", fname))
     mol_block = mol_xyz.write(format="mol")
-    return Chem.MolFromMolBlock(mol_block, removeHs=False)
+    return Chem.MolFromMolBlock(mol_block, removeHs=False) #make sure H are included
 
-m = xyz_to_mol("test.xyz")
+data = pd.read_csv("train_charges.csv") #read data
 
-m = Chem.MolFromMolFile("test.mol", removeHs=False)
+X = []
 
-for at in m.GetAtoms():                             
-      aid = at.GetIdx()
-      # generate atom-centered AP fingerprint
-      fp = AllChem.GetHashedAtomPairFingerprintAsBitVec(m, maxLength=max_len, fromAtoms=[aid])
-      arr = np.zeros(1,)
-      DataStructs.ConvertToNumpyArray(fp, arr)
-      X.append(arr)
+mols = list(dict.fromkeys(data['molecule_name'])) #get unique molecule names
 
-Y = [-0.493528, 0.060056, 0.060213, -0.493508, 0.144458, 0.144462, 0.144461, 0.144464, 0.144459, 0.144464]
+for mol_name in mols:
+    m = xyz_to_mol("structures/" + mol_name +".xyz") #load the molecule
+    
+    if m is None or len(m.GetAtoms()) != len(data[data.molecule_name==mol_name]): #check if the structure is loaded and no mismatch
+        data = data[data.molecule_name!=mol_name] #if there is mismatch, delete this entry from dataframe
+        print ("Error in loading molecule: " + str(mol_name) + ". Skipping...")
+        continue
+    
+    for at in m.GetAtoms(): # cycle through all atoms                            
+        aid = at.GetIdx()
+        # generate atom-centered AP fingerprint
+        fp = AllChem.GetHashedAtomPairFingerprint(m, maxLength=max_len, fromAtoms=[aid])
+        arr = np.zeros(1,)
+        DataStructs.ConvertToNumpyArray(fp, arr)
+        X.append(arr) #all APs in one matrix
 
+Y = data['mulliken_charge'].to_numpy() #all charges in one array
+
+#run and fit RandomForestRegression method
 rf = RandomForestRegressor(n_estimators=n_estimators, random_state=random_state,\
                              min_samples_split=min_samples_split,n_jobs=n_jobs,\
                              min_samples_leaf=min_samples_leaf)
 rf.fit(X, Y)
-# write the model to file
-joblib.dump(rf, 'test.model', compress=9)
+
+joblib.dump(rf, 'charges.model', compress=9)
