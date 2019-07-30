@@ -1,8 +1,8 @@
 import pybel
 import numpy as np
+import pandas as pd
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.externals import joblib
-import pandas as pd
 
 max_atoms = 30
 
@@ -18,6 +18,7 @@ def getdist(a1, a2):
 
 def CoulombMatrix(mol):
     cm = np.zeros((max_atoms, max_atoms))
+    mag = []
     for i in mol:
         c = np.zeros(max_atoms)
         for j in mol:
@@ -25,11 +26,25 @@ def CoulombMatrix(mol):
                 c[j.idx-1] = (0.5*j.atomicnum**2.4)
             elif i.idx != j.idx:
                 c[j.idx-1] = i.atomicnum*j.atomicnum/getdist(i, j)
+        mag.append(np.linalg.norm(c))
         cm[i.idx-1] = c
     
-    return cm
+    mag.extend([0]*(max_atoms-len(mol.atoms)))
+        
+    sorter = pd.DataFrame(list(zip(mag, cm)), columns=['mag', 'cm'])
+        
+    sorter = sorter.sort_values('mag', ascending=False)
+    
+    s = sorter['cm'].to_numpy()
+    
+    scm = np.array([i for i in s])
+    
+    return scm
 
-data = pd.read_csv("train_dipoles.csv") #read data
+m = next(pybel.readfile("xyz", "test.xyz"))
+CoulombMatrix(m)
+
+data = pd.read_csv("dipole_moments.csv", nrows=5000) #read data
 
 C = []
 
