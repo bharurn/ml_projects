@@ -1,4 +1,4 @@
-This code predicits the dipole of a molecules using Kernel Regression method. Sorted Coulumb matrices are used as features for each 
+This code predicits the dipole of a molecules using Deep Neural Network Regression method. Sorted Coulumb matrices are used as features for each 
 molecule.
 
 The training data should be named as 'train_dipoles.csv'. To train the model, run 'train.py'; this will output the files 'dipoleX.model', 
