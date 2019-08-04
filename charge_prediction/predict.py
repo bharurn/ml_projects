@@ -1,17 +1,11 @@
 from rdkit.Chem import AllChem
-from rdkit import Chem, DataStructs
-import pybel
+from rdkit import DataStructs
+import chemml
 import numpy as np
 from sklearn.externals import joblib
 import pandas as pd
 
 max_len = 4
-
-def xyz_to_mol(fname):
-    
-    mol_xyz = next(pybel.readfile("xyz", fname))
-    mol_block = mol_xyz.write(format="mol")
-    return Chem.MolFromMolBlock(mol_block, removeHs=False)
 
 rf = joblib.load('charges.model') #load model
 
@@ -22,7 +16,7 @@ X = []
 mols = list(dict.fromkeys(data['molecule_name'])) #get unique molecule names
 
 for mol_name in mols:
-    m = xyz_to_mol("structures/" + mol_name +".xyz")
+    m = chemml.xyz_to_rdkit("structures/" + mol_name +".xyz")
     
     if m is None or len(m.GetAtoms()) != len(data[data.molecule_name==mol_name]): #check for file loading errors
         data = data[data.molecule_name!=mol_name]
