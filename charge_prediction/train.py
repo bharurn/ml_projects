@@ -1,10 +1,10 @@
 from rdkit.Chem import AllChem
-from rdkit import Chem, DataStructs
-import pybel
+from rdkit import DataStructs
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.externals import joblib
 import pandas as pd
+import chemml
 
 # set RF-parameter
 n_estimators = 100
@@ -15,12 +15,6 @@ max_depth = 6
 min_samples_leaf = 6
 max_len = 4
 
-def xyz_to_mol(fname):#to convert xyz file to mol for RDKit
-    
-    mol_xyz = next(pybel.readfile("xyz", fname))
-    mol_block = mol_xyz.write(format="mol")
-    return Chem.MolFromMolBlock(mol_block, removeHs=False) #make sure H are included
-
 data = pd.read_csv("train_charges.csv") #read data
 
 X = []
@@ -28,7 +22,7 @@ X = []
 mols = list(dict.fromkeys(data['molecule_name'])) #get unique molecule names
 
 for mol_name in mols:
-    m = xyz_to_mol("structures/" + mol_name +".xyz") #load the molecule
+    m = chemml.xyz_to_rdkit("structures/" + mol_name +".xyz") #load the molecule
     
     if m is None or len(m.GetAtoms()) != len(data[data.molecule_name==mol_name]): #check if the structure is loaded and no mismatch
         data = data[data.molecule_name!=mol_name] #if there is mismatch, delete this entry from dataframe
