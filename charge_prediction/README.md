@@ -2,4 +2,4 @@ This code predicits the charge on an atom (could be muliken or others depening o
 
 The training data should be named as 'train_charges.csv'. To train the model, run 'train.py'; this will output the file 'charges.model'. Using this run the file 'predict.py' to predict new charges from data given in 'test_charges.csv'. The results will be in 'predict_charges.csv'. All structures of molecules for training and prediction should be given in the folder 'structure/..' in XYZ format.
 
-The format of 'train_charges.csv' is given in the example folder. The molecule names in the csv should correspond to the XYZ file names of the respective molecules. The index of atoms for each molecule in the csv file should be in the same order as atoms in the XYZ files.
+The data is taken from this Kaggle dataset: https://www.kaggle.com/c/champs-scalar-coupling.
