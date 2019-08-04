@@ -7,3 +7,5 @@ The results will be in 'predict_charges.csv'. All structures of molecules for tr
 'structure/..' in XYZ format.
 
 The predictions from the alogrithm are currently not very accurate. It is probably because the sorted coulumb matrices are not effective as features. Either some other features or another ML algorithm has to be used.
+
+The data is taken from this Kaggle dataset: https://www.kaggle.com/c/champs-scalar-coupling.
