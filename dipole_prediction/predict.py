@@ -32,7 +32,19 @@ x_input = chemml.tf.estimator.inputs.numpy_input_fn(x={"x": X}, shuffle=False)
      
 y = test.predict(input_fn=x_input)
 
-for i in y:
-    print (i)
+a = list(y)
 
-#data.to_csv(r"predicted_X.csv")
+valsX = []
+valsY = []
+valsZ = []
+
+for i in a:
+    valsX.append( float( str(i).split(':')[1].split('([')[1].split('],')[0].split(',')[0] ))
+    valsY.append( float( str(i).split(':')[1].split('([')[1].split('],')[0].split(',')[1] ))
+    valsZ.append( float( str(i).split(':')[1].split('([')[1].split('],')[0].split(',')[2] ))
+    
+data['predicted-X'] = valsX
+data['predicted-Y'] = valsY
+data['predicted-Z'] = valsZ
+
+data.to_csv(r"predicted_dipoles.csv")
