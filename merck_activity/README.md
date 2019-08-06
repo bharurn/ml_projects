@@ -1,0 +1,1 @@
+Comparision of different machine learning methods to predict acitivity of different molecules on the basis of time of execution, R_squared, RMSE and MAE values. Data taken from the Merck Kaggle competetion: https://www.kaggle.com/c/MerckActivity/.
