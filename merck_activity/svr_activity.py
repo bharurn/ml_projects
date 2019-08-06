@@ -38,6 +38,6 @@ f = open("svr.txt", "w")
 
 f.write("R Squared:" + str(r2_score(y_test, y_pred)))
 
-f.write("RMSE: " + str(sqrt(mean_squared_error(y_test, y_pred))))
+f.write("\nRMSE: " + str(sqrt(mean_squared_error(y_test, y_pred))))
 
-f.write("MAE:" + str(mean_absolute_error(y_test, y_pred)))
+f.write("\nMAE:" + str(mean_absolute_error(y_test, y_pred)))
